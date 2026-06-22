@@ -1,63 +1,48 @@
-# Home-Lab Master Directives & Security Policy
+# Master-Direktiven & Sicherheitsrichtlinien (PraxisLab-Infrastruktur)
 
-Bu döküman, bu repository üzerinde çalışan geliştiricinin ve yapay zeka asistanlarının (Gemini, Cursor vb.) uyması gereken **katı güvenlik kurallarını, çalışma prensiplerini ve metodolojileri** tanımlar.
 
----
-
-## 🛡️ 1. Rol ve Kapsam (Role & Scope)
-
-Bu projede çalışan yapay zeka asistanı, **Kıdemli Yazılım Mimarı ve Siber Güvenlik Uzmanı** rolündedir. Birinci öncelik **kod güvenliği** ve **veri sızıntısını (Data Leakage) önlemektir**.
+Dieses Dokument definiert die **Sicherheitsregeln, Arbeitsweisen und Richtlinien** für den Entwickler und alle KI-Assistenten (wie Gemini, Cursor usw.), die an diesem Repository arbeiten.
 
 ---
 
-## 🚫 2. Katı Güvenlik Kuralları (Strict Security Rules)
+## 🇩🇪 1. Kontext & Zielsetzung (Kontext & Ziel)
 
-### A. Gizli Veri Koruması (No Hardcoded Secrets)
-* Üretilecek veya düzenlenecek hiçbir kodda/yapılandırmada **gerçek API anahtarı, şifre, token, veritabanı bağlantı dizesi (connection string) veya kişisel veri (PII)** kullanılamaz.
-* Bu tür veriler yerine her zaman çevre değişkenleri (örn: `process.env.VARIABLE_NAME` veya `os.getenv("VARIABLE_NAME")`) ya da güvenli placeholder'lar (örn: `YOUR_API_KEY`) kullanılmalıdır.
-* Projelerde OWASP Top 10 güvenlik standartlarına kesinlikle uyulacaktır.
-
-### B. Kimlik Bilgisi Avı (Credentials Hunter)
-* Eğer kullanıcı tarafından paylaşılan kod parçalarında, loglarda veya konfigürasyonlarda gerçek bir şifre, özel anahtar (private key) veya hassas veri tespit edilirse, **AI asistanı kullanıcıyı derhal uyaracak ve yanıtında bu veriyi maskeleyecektir** (örn: `************`).
-
-### C. Dosya İzolasyonu (File Isolation)
-* `.env`, `.git`, hassas içerikli `config.json` veya sertifika dosyalarının (`.pem`, `.crt`, `.key`) içeriği kullanıcı tarafından açıkça istenmediği sürece analiz edilmeyecek, okunmayacak ve bunlara dayanarak kod üretilmeyecektir.
-* Yerel geliştirme ortamındaki gizli dosyalar asla repository içine dahil edilmeyecektir.
-
-### D. Ağ ve IP Maskeleme (Network & IP Masking)
-* Home-Lab içerisinde kullanılan RFC1918 (özel IP adresleri: `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) adresleri yerel dokümantasyonda kullanılabilir, ancak dış dünyaya açık WAN IP'leri, ISP logları veya dış alan adları **kesinlikle maskelenmeli veya sahte/örnek verilerle değiştirilmelidir**.
+*   **Entwickler-Kontext:** Der Entwickler lebt in Deutschland und strebt eine Beschäftigung (Praktikum oder Festanstellung) auf dem **deutschen IT-Markt** an.
+*   **Sprachanforderung & Niveau (B2):** Alle Dokumentationen, Kommentare im Code, Fehlermeldungen und Architekturberichte müssen **ausschließlich in professionellem, natürlichem und grammatikalisch korrektem Deutsch auf B2-Niveau (Fachdeutsch)** verfasst werden. Die Sprache soll präzise, klar und fachlich fundiert sein, ohne jedoch übertrieben akademisch oder künstlich gehoben (z. B. C2-Ebene) zu wirken. Dies stellt sicher, dass die Dokumentation authentisch zum B2-Zertifikat des Entwicklers passt und bei Bewerbungen einen stimmigen Gesamteindruck hinterlässt.
+*   **Interaktionsmodus:** Der Entwickler stellt Anfragen, Erklärungen und Fehlerprotokolle primär auf **Türkisch** bereit. Die KI übersetzt und formuliert diese Inhalte eigenständig in das oben definierte B2-Fachdeutsch für alle GitHub-Dokumente und Repositories.
 
 ---
 
-## 🤝 3. Yapay Zeka ile Çalışma Yönergeleri (AI Collaboration Guidelines)
+## 🛡️ 2. Sicherheitsrichtlinien (Sicherheitsregeln)
 
-Laboratuvar uygulamalarını geliştirirken yapay zekadan en verimli şekilde faydalanmak için aşağıdaki adımlar takip edilir:
+### A. Schutz vertraulicher Daten (Keine fest kodierten Secrets)
+*   Es dürfen **keine echten API-Keys, Passwörter, Token, Datenbank-Verbindungszeichenfolgen (Connection Strings) oder personenbezogenen Daten (PII)** im Code oder in der Dokumentation verwendet werden.
+*   Stattdessen müssen Umgebungsvariablen (z. B. `process.env.VARIABLE_NAME` oder `os.getenv("VARIABLE_NAME")`) oder sichere Platzhalter (z. B. `IHR_API_KEY`, `PASSWORT_PLATZHALTER`) genutzt werden.
+*   Entwicklungslösungen müssen den OWASP Top 10 Sicherheitsstandards entsprechen.
 
-### 1. Planlama Aşaması (Planning)
-* Herhangi bir karmaşık konfigürasyona veya kodlamaya başlamadan önce asistan **Implementation Plan (Uygulama Planı)** hazırlamalıdır.
-* Plan, yapılacak işi, güvenlik risklerini ve doğrulama (test) adımlarını içermelidir.
+### B. Erkennung von Zugangsdaten (Credentials Hunter)
+*   Sollten im vom Benutzer bereitgestellten Code, in Logs oder Konfigurationen echte Passwörter, private Schlüssel (Private Keys) oder sensible Daten entdeckt werden, **muss die KI den Benutzer sofort warnen und diese Daten in der Antwort maskieren** (z. B. `************`).
 
-### 2. Hata Günlüğü Tutma (Troubleshooting & Failures)
-* Hatalar ve başarısız denemeler gizlenmemeli, aksine **öğrenme sürecinin bir parçası olarak** dökümante edilmelidir.
-* Dökümantasyonda şu 3 soruya cevap aranmalıdır:
-  1. *Hata neydi ve neden kaynaklandı?*
-  2. *Çözüm için hangi yollar denendi?*
-  3. *Kalıcı çözüm nasıl sağlandı ve gelecekte nasıl önlenir?*
+### C. Dateiisolation (File Isolation)
+*   Auf Dateien wie `.env`, `.git`, sensible `config.json` oder Zertifikatsdateien (`.pem`, `.crt`, `.key`) darf nur zugegriffen oder analysiert werden, wenn der Benutzer dies explizit verlangt.
+*   Lokale sensible Dateien dürfen unter keinen Umständen in das Repository committet werden.
 
-### 3. Portföy Odaklılık (Portfolio Mindset)
-* Yazılan kodlar ve yapılan konfigürasyonlar (MikroTik, Proxmox, Docker vb.) sadece "çalıştı ve bitti" şeklinde değil, kurumsal standartlarda (best practices) ve açıklayıcı yorum satırlarıyla yazılmalıdır.
-* README ve açıklama dosyaları, işe alım uzmanları (recruiters) ve teknik liderlerin okuyacağı varsayılarak profesyonel bir dille hazırlanmalıdır.
+### D. Netzwerk- und IP-Maskierung
+*   Interne RFC1918-IP-Adressen (z. B. `10.0.0.0/8`, `192.168.0.0/16`) können in der lokalen Dokumentation verwendet werden. Öffentliche WAN-IPs, ISP-Daten oder spezifische externe Domainnamen **müssen jedoch streng maskiert oder durch Dummy-Werte ersetzt werden**.
 
 ---
 
-## 📂 4. Çevre Değişkenleri Yönetimi (.env Management)
+## 🤝 3. Richtlinien für die KI-Zusammenarbeit (AI-Collaboration)
 
-* Projelerdeki `.env` dosyası kesinlikle `.gitignore` içerisinde yer almalıdır.
-* Projenin çalışması için gereken değişkenlerin yapısını göstermek amacıyla bir `.env.example` dosyası oluşturulmalı ve bu şablon GitHub'a gönderilmelidir.
-* Örnek şablon formatı:
-  ```env
-  # GitHub'a güvenle gönderilecek şablon
-  DATABASE_URL=mongodb://localhost:27017/mydb
-  STRIPE_SECRET_KEY=your_stripe_secret_key_here
-  JWT_SECRET=your_jwt_secret_here
-  ```
+### 1. Planungsphase (Planning Mode)
+*   Vor der Durchführung komplexer Konfigurationen oder Codeänderungen muss die KI einen **Implementierungsplan** auf Deutsch erstellen.
+*   Der Plan muss die Sicherheitsrisiken und Validierungsschritte enthalten.
+
+### 2. Protokollierung von Fehlern (Fehlermanagement)
+*   Fehler und misslungene Versuche dürfen nicht verschwiegen werden. Sie sind ein wichtiger Teil des Lernprozesses und müssen wie folgt dokumentiert werden:
+    1. *Was war der Fehler und warum ist er aufgetreten?*
+    2. *Welche Lösungswege wurden ausprobiert?*
+    3. *Wie wurde das Problem endgültig gelöst und wie kann es zukünftig vermieden werden?*
+
+### 3. Keine automatischen Git-Operationen
+*   Die KI darf **keine Git-Befehle** (wie `git init`, `git add`, `git commit`, `git push`) ohne die explizite Aufforderung und Bestätigung des Benutzers ausführen. Der Benutzer verwaltet seine Git-Historie selbst.

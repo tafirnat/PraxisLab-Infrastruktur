@@ -1,77 +1,78 @@
-# 🛠️ Professional Home-Lab Portfolio & Network Infrastructure
+# 🛠️ PraxisLab-Infrastruktur: Netzwerk- & Virtualisierungsportfolio
 
-Bu repository, siber güvenlik, ağ yönetimi, sanallaştırma ve sistem yönetimi alanlarında edindiğim pratik tecrübeleri, karşılaştığım hataları ve ürettiğim çözümleri barındıran profesyonel **Home-Lab günlük ve dökümantasyon alanıdır**.
 
-Buradaki temel amaç, teorik bilgileri gerçek dünya senaryolarıyla birleştirerek endüstri standartlarında altyapı yönetimi becerisi kazanmaktır.
+Dieses Repository dient als Dokumentation und Portfolio für mein persönliches **Home-Lab**. Hier halte ich praktische Erfahrungen, Fehlerbehebungen (Troubleshooting) und Lösungen in den Bereichen Netzwerkinfrastruktur, Virtualisierung, Systems Administration und Cybersicherheit fest.
 
----
-
-## 🖥️ 1. Donanım Envanteri (Hardware Inventory)
-
-Home-Lab altyapısı, kaynak yönetimi ve yedekleme stratejileri gözetilerek 3 katmanlı (tiered storage) depolama ve güçlü sanallaştırma/ağ donanımlarından oluşmaktadır:
-
-*   **Ağ Altyapısı (Network Backbone):**
-    *   **Router / Firewall:** MikroTik RB5009UG+S+IN *(1x 10G SFP+, 1x 2.5G, 7x 1G Port, ARM 4 Çekirdek İşlemci, RouterOS v7)*
-    *   **Yönetilebilir Switch:** TP-Link TL-SG2008P *(8 Port Gigabit, L2+ Managed, 4 Port PoE+ destekli, Omada SDN)*
-    *   **Access Point:** TP-Link Omada EAP610 *(Wi-Fi 6 AX1800, PoE+, Multi-SSID & VLAN)*
-    *   **Kablolama:** Cat 5e Ethernet altyapısı
-*   **Sanallaştırma Sunucusu (Hypervisor):**
-    *   **Ana Sunucu (Mini PC):** Geekom A8
-    *   **İşlemci:** AMD Ryzen 8000 Serisi (Yüksek yoğunluklu sanallaştırma desteği)
-    *   **RAM:** 32 GB DDR5
-*   **Katmanlı Depolama Mimarisi (Storage Tiers):**
-    *   **Tier 1 (Hot - Dahili):** 1 TB Dahili NVMe M.2 SSD *(Aktif VM ve konteynerler için yüksek IOPS)*
-    *   **Tier 2 (Warm - Harici):** 1 TB Samsung 990 EVO Plus NVMe M.2 SSD *(10 Gbps Type-C harici kutu ile bağlı. VM yedekleri ve anlık görüntüler/snapshot'lar için)*
-    *   **Tier 3 (Cold - SD Kart):** 128 GB SanDisk Extreme PRO MicroSD Kart *(A2, V30. ISO dosyaları, CT şablonları ve log arşivleri için)*
+Das Hauptziel dieses Projekts ist es, theoretisches Wissen in praxisnahen Szenarien anzuwenden und eine Infrastruktur nach professionellen Industriestandards aufzubauen.
 
 ---
 
-## 🌐 2. Ağ Yapılandırması ve Topoloji (Network Topology)
+## 🖥️ 1. Hardware-Inventar (Hardware Inventory)
 
-Ağ güvenliği ve cihaz izolasyonu için **VLAN (Virtual Local Area Network)** tabanlı segmentasyon uygulanmıştır. Yönetim arayüzleri dış dünyaya ve diğer laboratuvar ortamlarına tamamen kapatılmıştır.
+Die Home-Lab-Infrastruktur nutzt eine dedizierte Speicher-Klassifizierung (Tiered Storage) sowie leistungsstarke Netzwerk- und Virtualisierungskomponenten, um Ressourcen optimal zu verwalten und Redundanz zu gewährleisten:
 
-### A. Genel Topoloji
+*   **Netzwerkinfrastruktur (Network Backbone):**
+    *   **Router / Firewall:** MikroTik RB5009UG+S+IN *(1x 10G SFP+, 1x 2.5G, 7x 1G Ports, ARM 4-Kern-Prozessor, RouterOS v7)*
+    *   **Managed Switch:** TP-Link TL-SG2008P *(8 Ports Gigabit, L2+ Managed, 4 Ports PoE+ Unterstützung, Omada SDN)*
+    *   **Access Point:** TP-Link Omada EAP610 *(Wi-Fi 6 AX1800, PoE+, Multi-SSID & VLAN-fähig)*
+    *   **Verkabelung:** Strukturierte Cat 5e Ethernet-Verkabelung
+*   **Virtualisierungsserver (Hypervisor):**
+    *   **Hauptserver (Mini-PC):** Geekom A8
+    *   **Prozessor:** AMD Ryzen 8000er-Serie (Optimiert für hohe Virtualisierungsdichte)
+    *   **Arbeitsspeicher:** 32 GB DDR5 RAM
+*   **Speicher-Hierarchie (Storage Tiers):**
+    *   **Tier 1 (Hot - Intern):** 1 TB Interne NVMe M.2 SSD *(Für das Betriebssystem und aktive, E/A-intensive VMs)*
+    *   **Tier 2 (Warm - Extern):** 1 TB Samsung 990 EVO Plus NVMe M.2 SSD *(Angeschlossen über ein externes USB-C-Gehäuse mit 10 Gbps. Genutzt für VM-Backups und Snapshots)*
+    *   **Tier 3 (Cold - SD-Karte):** 128 GB SanDisk Extreme PRO MicroSD-Karte *(A2, V30. Genutzt für ISO-Dateien, CT-Templates und Log-Archive)*
 
-| Cihaz | Görevi | Yönetim IP’si | Bağlantı Noktası (Port) |
+---
+
+## 🌐 2. Netzwerkarchitektur und VLAN-Segmentierung
+
+Zur Erhöhung der Netzwerksicherheit und zur Isolierung von Testumgebungen wird eine **VLAN-basierte Netzsegregation** eingesetzt. Alle administrativen Management-Schnittstellen sind vollständig vom Gastnetzwerk und den Laborumgebungen isoliert.
+
+### A. Netzwerktopologie
+
+| Gerät | Funktion | Management-IP | Port-Zuweisung |
 | :--- | :--- | :--- | :--- |
-| **FritzBox** | WAN / Apartman Modemi | - | Router (ether1) |
-| **MikroTik RB5009** | Ana Router & Gateway | `10.0.10.1` | ether2 → Switch Port 8 |
-| **TP-Link SG2008P** | L2 Yönetilebilir Switch | `10.0.10.2` | Port 1 → AP, Port 7 → Yönetim PC, Port 8 → Router |
-| **Omada EAP610** | Kablosuz AP | `10.0.10.3` | Port 1 (Trunk) |
+| **FritzBox** | WAN / Hausanschluss-Modem | - | Router (ether1) |
+| **MikroTik RB5009** | Haupt-Router & Gateway | `10.0.10.1` | ether2 → Switch Port 8 |
+| **TP-Link SG2008P** | L2 Managed Switch | `10.0.10.2` | Port 1 → AP, Port 7 → Management-PC, Port 8 → Router |
+| **Omada EAP610** | Kabelloser AP | `10.0.10.3` | Port 1 (Trunk) |
 | **Geekom A8** | Proxmox VE Host | `10.0.10.10` | Port 6 (Trunk) |
-| **Yönetim Bilgisayarı**| Yönetim Erişimi | `10.0.10.100` (Statik) | Port 7 (Access VLAN 10) |
-| **Smart TV** | Ev Ağı Cihazı | `10.0.30.33` (Statik) | Switch Port 5 (Access VLAN 30) |
+| **Management-PC** | Administrativer Zugriff | `10.0.10.100` (Statisch) | Port 7 (Access VLAN 10) |
+| **Smart TV** | Entertainment-Gerät | `10.0.30.33` (Statisch) | Switch Port 5 (Access VLAN 30) |
 
-### B. VLAN Segmentasyonu
+### B. VLAN-Struktur
 
-| VLAN ID | İsim | Subnet | SSID (Wi-Fi) | Kullanım Amacı |
+| VLAN ID | Name | Subnetz | SSID (Wi-Fi) | Verwendungszweck |
 | :--- | :--- | :--- | :--- | :--- |
-| **10** | Mgmt | `10.0.10.0/24` | *(Sadece Kablolu)* | Altyapı Yönetimi (Switch, Router, AP, Proxmox) |
-| **21** | WinServer | `10.0.21.0/24` | WinS | Active Directory ve Windows Server Laboratuvarı |
-| **22** | LinuxLab | `10.0.22.0/24` | LinS | Linux Sunucuları ve Konteyner Ortamları |
-| **30** | Haus | `10.0.30.0/24` | HLab | Kişisel Cihazlar (Güvenli Ev Ağı) |
-| **40** | IoT | `10.0.40.0/24` | IoT | Akıllı Ev Cihazları (İnternet Erişimi Kısıtlı/İzole) |
-| **50** | Guest | `10.0.50.0/24` | Guest | Misafir Ağı |
-| **60** | Printer | `10.0.60.0/24` | Printer | Yazıcı Ağı (Statik IP Tanımlamaları) |
-| **99** | Kali | `10.0.99.0/24` | KLan | Sızma Testleri ve Güvenlik Araştırmaları |
+| **10** | Mgmt | `10.0.10.0/24` | *(Nur Ethernet)* | Infrastruktur-Management (Switch, Router, AP, Proxmox) |
+| **21** | WinServer | `10.0.21.0/24` | WinS | Active Directory & Windows Server Testumgebung |
+| **22** | LinuxLab | `10.0.22.0/24` | LinS | Linux-Server und Container-Umgebungen |
+| **30** | Haus | `10.0.30.0/24` | HLab | Privates Heimnetzwerk (Sichere Endgeräte) |
+| **40** | IoT | `10.0.40.0/24` | IoT | Smart-Home-Geräte (Isoliert, eingeschränkter WAN-Zugriff) |
+| **50** | Guest | `10.0.50.0/24` | Guest | Isoliertes Gastnetzwerk |
+| **60** | Printer | `10.0.60.0/24` | Printer | Netzwerkdrucker (Statische IP-Vergabe) |
+| **99** | Kali | `10.0.99.0/24` | KLan | Penetrationstests & Sicherheitsaudits |
 
 ---
 
-## 🛠️ 3. Cihaz Yapılandırma Detayları
+## 🛠️ 3. Konfigurationsdetails der Netzwerkkomponenten
 
-### Switch (TP-Link SG2008P) Konfigürasyon Matrisi
-*   **Yönetim IP'si:** `10.0.10.2` (Statik)
-*   **Port Rolleri:**
+### Switch (TP-Link SG2008P) Port-Konfiguration
+*   **Management-IP:** `10.0.10.2` (Statisch)
+*   **Port-Zuordnung:**
     *   **Port 1:** AP (Trunk) -> PVID 1, Tagged: `10,21,22,30,40,50,60,99`, Untagged: `1`
     *   **Port 5:** TV (Access) -> PVID 30, Untagged: `30`
     *   **Port 6:** Proxmox Host (Trunk) -> PVID 10, Tagged: `21,22,99`, Untagged: `10`
-    *   **Port 7:** Yönetim PC (Access) -> PVID 10, Untagged: `10`
+    *   **Port 7:** Management-PC (Access) -> PVID 10, Untagged: `10`
     *   **Port 8:** Router Uplink (Trunk) -> PVID 1, Tagged: `10,21,22,30,40,50,60,99`, Untagged: `1`
-    *   **Port 2,3,4:** Boş (Güvenlik gereği kullanılmayan portlar varsayılan VLAN 1'e veya pasif duruma alınabilir)
+    *   **Ports 2,3,4:** Unbenutzt (Aus Sicherheitsgründen standardmäßig deaktiviert oder im VLAN 1 isoliert)
 
-### MikroTik RouterOS v7 Yapılandırması (Özet)
+### MikroTik RouterOS v7 Konfiguration (Auszug)
 
-*   **VLAN Arayüzlerinin Tanımlanması:**
+*   **Erstellung der VLAN-Schnittstellen:**
     ```routeros
     /interface vlan add interface=bridge name=VLAN10-Mgmt vlan-id=10
     /interface vlan add interface=bridge name=VLAN21-WinServer vlan-id=21
@@ -83,7 +84,7 @@ Ağ güvenliği ve cihaz izolasyonu için **VLAN (Virtual Local Area Network)** 
     /interface vlan add interface=bridge name=VLAN99-Kali vlan-id=99
     ```
 
-*   **IP Adreslerinin Atanması:**
+*   **Zuweisung der IP-Adressen (Gateways):**
     ```routeros
     /ip address add address=10.0.10.1/24 interface=VLAN10-Mgmt
     /ip address add address=10.0.21.1/24 interface=VLAN21-WinServer
@@ -95,15 +96,15 @@ Ağ güvenliği ve cihaz izolasyonu için **VLAN (Virtual Local Area Network)** 
     /ip address add address=10.0.99.1/24 interface=VLAN99-Kali
     ```
 
-*   **Bridge VLAN Ayarları:**
+*   **Bridge-VLAN-Einstellungen (Trunking):**
     ```routeros
     /interface bridge vlan add bridge=bridge tagged=bridge,ether2 vlan-ids=10
     /interface bridge vlan add bridge=bridge tagged=ether2 vlan-ids=21,22,30,40,50,60,99
     ```
 
-### Proxmox VE Host Network Yapılandırması (`/etc/network/interfaces`)
+### Proxmox VE Host Netzwerkkonfiguration (`/etc/network/interfaces`)
 
-Proxmox üzerinde VLAN farkındalığı (`bridge-vlan-aware yes`) etkinleştirilerek VM'lerin doğrudan ilgili VLAN ID'ler ile çalışabilmesi sağlanmıştır.
+Die Netzwerkschnittstelle in Proxmox ist als VLAN-aware Brücke konfiguriert (`bridge-vlan-aware yes`). Dadurch können virtuelle Maschinen (VMs) und Linux-Container (LXCs) direkt mit den entsprechenden VLAN IDs gestartet und isoliert werden.
 
 ```bash
 auto lo
@@ -125,19 +126,19 @@ iface vmbr0 inet static
 
 ---
 
-## 🔒 4. Güvenlik Politikası & Bilgi Güvenliği
+## 🔒 4. Sicherheitsrichtlinie & Datenschutz (Security & Privacy)
 
-Bu projenin halka açık (public) sürümünde siber güvenlik prensipleri en üst düzeyde uygulanmaktadır:
-1.  **Sıfır Hardcoded Gizli Veri:** Tüm API anahtarları, şifreler ve tokenlar kod dışında tutulur. Yapılandırma şablonları için [`.env.example`](file:///.env.example) dosyası referans alınmalıdır.
-2.  **Yönetim Ağı İzolasyonu:** Yönetim arayüzlerine (`10.0.10.x`) erişim sadece kablolu fiziksel Switch Port 7 üzerinden sınırlandırılmıştır. Wi-Fi ağlarından yönetim subnet'ine erişim engellenmiştir.
-3.  **Hassas Dosya Filtreleme:** Yerel geliştirme dosyaları, `.env` dosyaları ve özel sertifikalar git takibine girmeyecek şekilde [`.gitignore`](file:///.gitignore) ile izole edilmiştir.
-4.  **Güvenlik Kuralları Bildirgesi:** Yapay zeka asistanları ile uyumlu ve güvenli kod geliştirme kurallarının tamamı [`MASTER_DIRECTIVES.md`](file:///MASTER_DIRECTIVES.md) dosyasında tanımlanmıştır.
+In diesem öffentlichen GitHub-Repository gelten strenge Sicherheits- und Datenschutzprinzipien:
+1.  **Keine fest kodierten Anmeldedaten (No Hardcoded Secrets):** Zugangsdaten werden über Umgebungsvariablen gesteuert. Lokale Beispiele finden sich in der [`.env.example`](file:///.env.example) Datei.
+2.  **Isolierung des Management-Netzwerks:** Der administrative Zugriff auf die Netzwerkkomponenten (`10.0.10.x`) ist physikalisch auf den Switch-Port 7 beschränkt. Ein Zugriff aus WLAN-Netzwerken ist deaktiviert.
+3.  **Ausschließen sensibler Daten:** Die [`.gitignore`](file:///.gitignore) verhindert, dass temporäre Dateien, Passwörter, lokale Konfigurationen und private Schlüssel hochgeladen werden.
+4.  **Entwicklungskonformität:** Alle Sicherheits- und Arbeitsrichtlinien für dieses Projekt sind in den [Master-Direktiven](file:///MASTER_DIRECTIVES.md) definiert.
 
 ---
 
-## 📈 5. Yol Haritası ve Gelecek Çalışmalar
+## 📈 5. Roadmap und zukünftige Projekte
 
-- [ ] Linux Lab (VLAN22) üzerinde Docker & Kubernetes (k3s) Cluster kurulumu.
-- [ ] Active Directory Ormanı ve Domain Controller yapılandırılması (VLAN21).
-- [ ] Centralized Logging (Elasticsearch/Fluentd/Kibana veya Grafana Loki) entegrasyonu.
-- [ ] Güvenlik analitiği için Kali VLAN99 üzerinden kontrollü penetrasyon testlerinin gerçekleştirilmesi.
+- [ ] Installation eines Kubernetes-Clusters (k3s) im LinuxLab (VLAN 22).
+- [ ] Aufbau einer Windows Domain Controller Testumgebung (Active Directory) im WinServer-Netz (VLAN 21).
+- [ ] Implementierung eines zentralen Logging-Systems (z.B. Loki/Grafana oder ELK-Stack).
+- [ ] Sicherheitsüberprüfungen und Pentesting-Simulationen über das Kali-VLAN (VLAN 99).
